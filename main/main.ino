@@ -92,7 +92,6 @@ void calibrate(int init){
 }
 
 void displayOff(void){
-  fsrCount = 1;
   display.clearDisplay();
   display.setCursor(7,0);
   display.println("Goodbye...");
@@ -166,6 +165,7 @@ void loop(void) {
 
   if (fsrHeld > fsrTimeout) {
     if (displayState == 1) {
+      fsrCount = 1;
       displayOff();
     }
     fsrHeld = 1;
