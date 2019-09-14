@@ -7,7 +7,7 @@
   - https://learn.adafruit.com/adafruit-feather-huzzah-esp8266/pinouts
  - Breadboard
  - Jumper Cables
-  - Force Sensing Resistor (FSR)
+ - Force Sensing Resistor (FSR)
    - https://learn.adafruit.com/force-sensitive-resistor-fsr
    - https://pimylifeup.com/arduino-force-sensing-resistor/
  - Resistor for voltage divider
