@@ -24,7 +24,7 @@ int fsrN = 0;
 
 int awake = 0;
 // shutdown after this long
-int shutdown_seconds; 
+int shutdown_seconds = 5400; 
  
 void setup(void) {
   Serial.begin(9600); 
