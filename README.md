@@ -11,7 +11,7 @@
    - https://learn.adafruit.com/force-sensitive-resistor-fsr
    - https://pimylifeup.com/arduino-force-sensing-resistor/
  - Resistor for voltage divider
-   - 27ohm(I found this to give me the proper range based on my FSR
+   - 27ohm (I found this to give me the proper range based on my FSR
    - https://www.dummies.com/programming/electronics/diy-projects/electronics-projects-how-to-divide-voltage-with-resistors/
  - Capacitor
    - 47uf
