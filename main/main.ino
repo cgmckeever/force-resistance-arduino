@@ -83,6 +83,7 @@ void calibrate(int init){
     delay(2000);
     display.setCursor(0,18);
     display.println("                    ");
+    display.setCursor(0,18);
     display.println("Press Break Fully (5s)");
     display.display();
   }
