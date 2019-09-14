@@ -13,7 +13,7 @@
     - https://www.pololu.com/product/1645
     - http://jameco.com/Jameco/Products/ProdDS/2136471.pdf
  - Resistor for voltage divider
-    - 27ohm (I found this to give me the proper range based on my FSR
+    - 27ohm (I found this to give me the proper range based on my FSR)
     - https://www.dummies.com/programming/electronics/diy-projects/electronics-projects-how-to-divide-voltage-with-resistors/
  - Capacitor
     - 47uf
