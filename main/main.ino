@@ -87,8 +87,6 @@ void calibrate(int init){
     display.display();
   }
   
-  display.println("max: " + (String) maxV + "v");
-  
 }
 
 void displayOff(void){
