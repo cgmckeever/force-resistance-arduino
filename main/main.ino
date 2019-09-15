@@ -127,24 +127,12 @@ void printResistance(int reading){
     resistance = ' ' + resistance;  
   }
   
-  print(7, "Resistance", 35, resistance);
+  print(7, "Resistance", 40, resistance);
 }
 
 void calibrate(){
-  printCalibration();
-
-  display.clearDisplay();  
-  display.setTextSize(2);
-  display.setTextColor(WHITE);
-  
-  display.setCursor(0,0);
-  display.println("Hold Break");
-
-  display.setCursor(0,18);
-  display.println("5 seconds");
-  
-  display.display();
-  
+  printCalibration();  
+  print(5, "Hold Break", 3, "5 seconds");
   delay(3000);
   
   maxV = analogRead(fsrPin) + 20;
