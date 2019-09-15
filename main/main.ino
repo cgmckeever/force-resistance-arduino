@@ -34,8 +34,13 @@ void loop(void) {
   if(!digitalRead(BUTTON_C)) reduceInterval();
 
   getResistance();
-  printResistance(fsrN);
 
+  if (fsrCount > 0){
+    printResistance(fsrN);
+  }else {
+    printResistance(fsrStep);
+  }
+  
   Serial.println("Resistance: " + (String) fsrN);
   
   delay(1000);
