@@ -3,6 +3,7 @@
 ## Features
 
 - Variable sensor level adjustment
+- Change to level mode (default 1-10)
 - Calibrate the max resistance point (ie what 100% is for you)
 - Sleepmode wakes with break press
 

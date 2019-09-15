@@ -38,10 +38,8 @@ void loop(void) {
   if (fsrCount > 0){
     printResistance(fsrN);
   }else {
-    printResistance(fsrStep);
+    printLevel(fsrLevel);
   }
-  
-  Serial.println("Resistance: " + (String) fsrN);
   
   delay(1000);
 
@@ -76,12 +74,13 @@ void getResistance(void){
   fsrTotal = fsrTotal + fsr[last]; 
  
   // calculate fsrCount moving average, and normalize off max voltage
-  fsrMA = (float) fsrTotal / last + 1;
-  Serial.println((String) last + 1 + " Moving Average: " + (String) fsrMA);
+  fsrMA = (float) fsrTotal / (last + 1);
+  Serial.println((String) (last + 1) + " Moving Average: " + (String) fsrMA);
   
   fsrLast = fsrN;
   fsrN = round(fsrMA / (float) maxV * 100);
   if (fsrN > 100) fsrN = 100;
+  Serial.println("Normalized: " + (String) fsrN);
  
   if (fsrN == fsrLast) {
     fsrHeld = fsrHeld + 1;
@@ -90,8 +89,8 @@ void getResistance(void){
   }
 
   //calculate fsr step range
-  fsrStep = ceil((float) fsrMA / stepV) * stepCount;
-  Serial.println("Step: " + (String) fsrStep);
+  fsrLevel = round((float) fsrMA / levelV);
+  Serial.println("Level: " + (String) fsrLevel);
 }
 
 void print(int line1X, String line1, int line2X, String line2){
@@ -118,6 +117,17 @@ void printResistance(int reading){
   }
   
   print(7, "Resistance", 40, resistance);
+}
+
+void printLevel(int reading){
+  // pad reading for display formating
+  String level = (String) reading;
+  int len = 2 - level.length();
+  for(int i = 0; i < len; i++) {
+    level = ' ' + level;  
+  }
+  
+  print(10, "Level", 45, level);
 }
 
 void calibrate(){
@@ -152,7 +162,12 @@ int lastIndex(void){
 }
 
 void printInterval(void){
-  print(15, "Interval", 30, "--" + (String) fsrCount + "--");
+  if (fsrCount > 0){
+    print(15, "Interval", 30, "--" + (String) fsrCount + "--");
+  }else{
+    print(0, "Levels" + (String) levels, 0, "");
+  }
+  
   delay(2000);
 }
 
