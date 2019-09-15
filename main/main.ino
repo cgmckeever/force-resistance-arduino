@@ -51,14 +51,14 @@ void setup(void) {
 
 void loop(void) {
 
-  getResistance();
-  printResistance(fsrN);
-  Serial.println("Resistance: " + (String) fsrN);
-  
   if(!digitalRead(BUTTON_A)) calibrate();
   if(!digitalRead(BUTTON_B)) displayOff();
   if(!digitalRead(BUTTON_C)) reduceInterval();
 
+  getResistance();
+  printResistance(fsrN);
+  Serial.println("Resistance: " + (String) fsrN);
+  
   delay(1000);
 
   if ((displayState == 0) && (fsrN > 80)) {
