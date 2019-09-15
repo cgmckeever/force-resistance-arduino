@@ -1,5 +1,12 @@
 # Resistance Meter for DIY Peloton
 
+## Features
+
+- Variable sensor level adjustment
+- Calibrate the max resistance point (ie what 100% is for you)
+- Sleepmode wakes with break press
+
+
 ## Items Needed
 
 - Arduino Board
