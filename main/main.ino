@@ -95,6 +95,14 @@ void getResistance(void){
   Serial.println("Level: " + (String) fsrLevel);
 }
 
+String pad(String string, int len){
+  int padding = len - string.length();
+  for(int i = 0; i < len; i++) {
+    string = ' ' + string;  
+  }
+  return string;
+}
+
 void print(int line1X, String line1, int line2X, String line2){
   if (displayState == 1) {
     display.clearDisplay();  
@@ -111,24 +119,14 @@ void print(int line1X, String line1, int line2X, String line2){
 }
 
 void printResistance(int reading){
-  // pad reading for display formating
   String resistance = (String) reading;
-  int len = 3 - resistance.length();
-  for(int i = 0; i < len; i++) {
-    resistance = ' ' + resistance;  
-  }
-  
+  resistance = pad(resistance, 2); 
   print(7, "Resistance", 40, resistance);
 }
 
 void printLevel(int reading){
-  // pad reading for display formating
   String level = (String) reading;
-  int len = 2 - level.length();
-  for(int i = 0; i < len; i++) {
-    level = ' ' + level;  
-  }
-  
+  level = pad(level, 2);
   print(30, "Level", 45, level);
 }
 
