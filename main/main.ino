@@ -1,3 +1,6 @@
+// config
+#include "config.h"
+
 // OLED lib
 #include <SPI.h>
 #include <Wire.h>
@@ -5,31 +8,6 @@
 #include <Adafruit_SSD1306.h>
 
 Adafruit_SSD1306 display = Adafruit_SSD1306(128, 32, &Wire);
-
-#define BUTTON_A  0
-#define BUTTON_B 16
-#define BUTTON_C  2
-
-// the FSR and pulldown resistor are connected to a0 
-int fsrPin = A0;    
-
-// moving average variables
-#define fsrCountMax 5
-float fsrMA = 0.0;
-int fsrTotal = 0;
-int fsrCount = fsrCountMax;
-int fsr[fsrCountMax]; 
-
-// max voltage (based on pulldown resistor) seen on 
-// analog (A0) port, used to normlaize display
-int maxV = 950;  
-int fsrN = 0;
-int fsrLast = 0;
-
-// timeout 
-#define fsrTimeout 10 * 60
-int fsrHeld = 0;
-int displayState = 1;
 
  
 void setup(void) {
