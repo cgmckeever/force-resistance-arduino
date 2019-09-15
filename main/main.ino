@@ -22,7 +22,7 @@ int fsr[fsrCountMax];
 
 // max voltage (based on pulldown resistor) seen on 
 // analog (A0) port, used to normlaize display
-int maxV = 1024;  
+int maxV = 950;  
 int fsrN = 0;
 int fsrLast = 0;
 
@@ -39,81 +39,44 @@ void setup(void) {
 
   // OLED 
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
-  delay(1000);
   displayOn();
+  delay(2000);
  
-  // set pbuttons for future use
+  // set buttons
   pinMode(BUTTON_A, INPUT_PULLUP);
   pinMode(BUTTON_B, INPUT_PULLUP);
   pinMode(BUTTON_C, INPUT_PULLUP);
  
 }
 
-void print(String reading){
-  if (displayState == 1) {
-    // pad reading for display formating
-    int len = 3 - reading.length();
-    for(int i = 0; i < len; i++) {
-      reading = ' ' + reading;  
-    }
-    display.clearDisplay();
-    display.setTextSize(2);
-    display.setTextColor(WHITE);
-  
-    display.setCursor(7,0);
-    display.println("RESISTANCE");
-  
-    display.setCursor(37,18);
-    display.println(reading);
-    display.display();
-  }
-}
-
-void calibrate(int init){
-  display.clearDisplay();
-  display.setCursor(7,0);
-  display.println("CALIBRATE");
-
-  display.setCursor(0,18);
-  display.println("max: " + (String) maxV + "v");
-  display.display();
-
-  
-  if (init){
-    delay(2000);
-    display.setCursor(0,18);
-    display.println("                    ");
-    display.setCursor(0,18);
-    display.println("Press Break Fully (5s)");
-    display.display();
-  }
-  
-}
-
-void displayOff(void){
-  display.clearDisplay();
-  display.setCursor(7,0);
-  display.println("Goodbye...");
-  display.display();
-  delay(3000);
-  display.ssd1306_command(SSD1306_DISPLAYOFF);
-  displayState = 0;
-}
-
-void displayOn(void){
-  display.begin();
-  display.clearDisplay();
-  display.setCursor(0,0);
-  display.print("DIYPELOTON");
-  display.display();
-  delay(3000);
-  print("--" + (String) fsrCount + "--");
-  displayState = 1;
-  delay(1000);
-}
- 
 void loop(void) {
 
+  getResistance();
+  printResistance(fsrN);
+  Serial.println("Resistance: " + (String) fsrN);
+  
+  if(!digitalRead(BUTTON_A)) calibrate();
+  if(!digitalRead(BUTTON_B)) displayOff();
+  if(!digitalRead(BUTTON_C)) reduceInterval();
+
+  delay(1000);
+
+  if ((displayState == 0) && (fsrN > 80)) {
+    fsrCount = fsrCountMax;
+    fsrHeld = 0;
+    displayOn();
+  }else if (fsrHeld > fsrTimeout) {
+    if (displayState == 1) displayOff();
+    fsrHeld = 1;
+  }
+  
+} 
+
+
+//////////////
+//
+
+void getResistance(void){
   fsrTotal = 0;
   for(int i = 1; i < fsrCount; i++) {
     fsr[i-1] = fsr[i];
@@ -129,48 +92,98 @@ void loop(void) {
   // calculate fsrCount moving average, and normalize off max voltage
   fsrMA = (float) fsrTotal / fsrCount;
   Serial.println((String) fsrCount + " Moving Average: " + (String) fsrMA);
+  
   fsrLast = fsrN;
   fsrN = round(fsrMA / (float) maxV * 100);
-  print((String) fsrN);
-  Serial.println("Resistance: " + (String) fsrN);
-
+  if (fsrN > 100) fsrN = 100;
+ 
   if (fsrN == fsrLast) {
     fsrHeld = fsrHeld + 1;
   }else{
     fsrHeld = 0;
   }
+}
+
+void print(int line1X, String line1, int line2X, String line2){
+  if (displayState == 1) {
+    display.clearDisplay();  
+    display.setTextSize(2);
+    display.setTextColor(WHITE);
+    
+    display.setCursor(line1X,0);
+    display.println(line1);
   
- 
-  if(!digitalRead(BUTTON_A)){
-    calibrate(1);
-    delay(2000);
-    maxV = analogRead(fsrPin);
-    calibrate(0);
-    delay(2000);
+    display.setCursor(line2X,18);
+    display.println(line2);
+    display.display();
   }
+}
 
-  if(!digitalRead(BUTTON_B)){
-    displayOff();
+void printResistance(int reading){
+  // pad reading for display formating
+  String resistance = (String) reading;
+  int len = 3 - resistance.length();
+  for(int i = 0; i < len; i++) {
+    resistance = ' ' + resistance;  
   }
+  
+  print(7, "Resistance", 35, resistance);
+}
 
-  if(!digitalRead(BUTTON_C)){
-    if (fsrCount > 1) {
-     fsrCount = fsrCount - 1;
-     print("--" + (String) fsrCount + "--"); 
-    }
+void calibrate(){
+  printCalibration();
+
+  display.clearDisplay();  
+  display.setTextSize(2);
+  display.setTextColor(WHITE);
+  
+  display.setCursor(0,0);
+  display.println("Hold Break");
+
+  display.setCursor(0,18);
+  display.println("5 seconds");
+  
+  display.display();
+  
+  delay(3000);
+  
+  maxV = analogRead(fsrPin) + 20;
+  printCalibration();
+}
+
+void printCalibration(){
+  print(7, "Calibrate", 0, "max: " + (String) maxV);
+  delay(2000);
+}
+
+void reduceInterval(){
+  if (fsrCount > 1) {
+   fsrCount = fsrCount - 1;
   }
+  printInterval();    
+}
 
-  delay(1000);
+void printInterval(void){
+  print(15, "Interval", 30, "--" + (String) fsrCount + "--");
+  delay(2000);
+}
 
-  if (fsrHeld > fsrTimeout) {
-    if (displayState == 1) {
-      fsrCount = 1;
-      displayOff();
-    }
-    fsrHeld = 1;
-  }else if ((displayState == 0) && (fsrN > 90)) {
-    fsrCount = fsrCountMax;
-    displayOn();
-  }
- 
-} 
+void displayOff(void){
+  fsrCount = 1;
+  print(5, "Goodbye...", 37, "");
+  delay(2000);
+  display.clearDisplay();
+  display.display();
+  display.ssd1306_command(SSD1306_DISPLAYOFF);
+  displayState = 0;
+}
+
+void displayOn(void){
+  display.ssd1306_command(SSD1306_DISPLAYON);
+  displayState = 1;
+  Serial.println("Screen on");
+
+  print(7, "DIYPELOTON", 37, "");
+  delay(2000);
+  printInterval();
+}
