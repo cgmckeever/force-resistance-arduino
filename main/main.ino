@@ -155,9 +155,7 @@ void reduceInterval(){
 
 int lastIndex(void){
   int lastIndex = fsrCount - 1;
-  if (lastIndex < 0){
-    lastIndex = 0;
-  }
+  if (lastIndex < 0) lastIndex = 0;
   return lastIndex;
 }
 
