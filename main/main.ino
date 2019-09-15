@@ -186,4 +186,5 @@ void displayOn(void){
   print(7, "DIYPELOTON", 37, "");
   delay(2000);
   printInterval();
+  printCalibration();
 }
