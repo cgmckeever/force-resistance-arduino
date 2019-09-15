@@ -24,6 +24,8 @@ void setup(void) {
   pinMode(BUTTON_A, INPUT_PULLUP);
   pinMode(BUTTON_B, INPUT_PULLUP);
   pinMode(BUTTON_C, INPUT_PULLUP);
+
+  if (defaultMode != 'resistance') fsrCount = 0; 
  
 }
 
@@ -127,7 +129,7 @@ void printLevel(int reading){
     level = ' ' + level;  
   }
   
-  print(20, "Level", 45, level);
+  print(30, "Level", 45, level);
 }
 
 void calibrate(){

@@ -26,6 +26,9 @@ int fsrN = 0;
 int fsrLast = 0;
 int fsrLevel = 0;
 
+// Set default mode ("level" or "resistance")
+int defaultMode = 'resistance';
+
 // timeout 
 #define fsrTimeout 10 * 60
 int fsrHeld = 0;
