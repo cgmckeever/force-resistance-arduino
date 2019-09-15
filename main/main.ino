@@ -147,6 +147,8 @@ void printCalibration(){
 void reduceInterval(){
   if (fsrCount > 1) {
    fsrCount = fsrCount - 1;
+  }else {
+    fsrCount = fsrCountMax;
   }
   printInterval();    
 }
