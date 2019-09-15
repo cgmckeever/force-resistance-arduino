@@ -127,7 +127,7 @@ void printResistance(int reading){
 void printLevel(int reading){
   String level = (String) reading;
   level = pad(level, 2);
-  print(30, "Level", 45, level);
+  print(35, "Level", 40, level);
 }
 
 void calibrate(){
