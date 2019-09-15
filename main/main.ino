@@ -127,7 +127,7 @@ void printLevel(int reading){
     level = ' ' + level;  
   }
   
-  print(10, "Level", 45, level);
+  print(20, "Level", 45, level);
 }
 
 void calibrate(){
@@ -165,7 +165,7 @@ void printInterval(void){
   if (fsrCount > 0){
     print(15, "Interval", 30, "--" + (String) fsrCount + "--");
   }else{
-    print(0, "Levels" + (String) levels, 0, "");
+    print(0, "Levels " + (String) levels, 0, "");
   }
   
   delay(2000);
