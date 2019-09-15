@@ -35,6 +35,7 @@ void loop(void) {
 
   getResistance();
   printResistance(fsrN);
+
   Serial.println("Resistance: " + (String) fsrN);
   
   delay(1000);
@@ -60,16 +61,18 @@ void getResistance(void){
     fsr[i-1] = fsr[i];
     fsrTotal = fsrTotal + fsr[i];
   }
+
+  int last = lastIndex();
   
-  fsr[fsrCount-1] = analogRead(fsrPin);
+  fsr[last] = analogRead(fsrPin);
   Serial.print("Analog reading = ");
-  Serial.println(fsr[fsrCount-1]); 
+  Serial.println(fsr[last]); 
   
-  fsrTotal = fsrTotal + fsr[fsrCount-1]; 
+  fsrTotal = fsrTotal + fsr[last]; 
  
   // calculate fsrCount moving average, and normalize off max voltage
-  fsrMA = (float) fsrTotal / fsrCount;
-  Serial.println((String) fsrCount + " Moving Average: " + (String) fsrMA);
+  fsrMA = (float) fsrTotal / last + 1;
+  Serial.println((String) last + 1 + " Moving Average: " + (String) fsrMA);
   
   fsrLast = fsrN;
   fsrN = round(fsrMA / (float) maxV * 100);
@@ -80,6 +83,10 @@ void getResistance(void){
   }else{
     fsrHeld = 0;
   }
+
+  //calculate fsr step range
+  fsrStep = ceil((float) fsrMA / stepV) * stepCount;
+  Serial.println("Step: " + (String) fsrStep);
 }
 
 void print(int line1X, String line1, int line2X, String line2){
@@ -123,12 +130,20 @@ void printCalibration(){
 }
 
 void reduceInterval(){
-  if (fsrCount > 1) {
+  if (fsrCount > 0) {
    fsrCount = fsrCount - 1;
   }else {
     fsrCount = fsrCountMax;
   }
   printInterval();    
+}
+
+int lastIndex(void){
+  int lastIndex = fsrCount - 1;
+  if (lastIndex < 0){
+    lastIndex = 0;
+  }
+  return lastIndex;
 }
 
 void printInterval(void){

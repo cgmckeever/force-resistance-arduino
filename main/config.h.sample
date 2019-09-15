@@ -20,12 +20,13 @@ int fsr[fsrCountMax];
 // max voltage (based on pulldown resistor) seen on 
 // analog (A0) port, used to normlaize display
 int maxV = 950;  
+int stepCount = 5;
+float stepV = maxV / (100/stepCount);
 int fsrN = 0;
 int fsrLast = 0;
+int fsrStep = 0;
 
 // timeout 
 #define fsrTimeout 10 * 60
 int fsrHeld = 0;
 int displayState = 1;
-
- 
