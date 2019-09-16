@@ -8,7 +8,10 @@
 #define BUTTON_C  2
 
 // the FSR and pulldown resistor are connected to a0 
-#define fsrPin A0    
+#define fsrPin A0
+
+// Set default mode ("level" or "resistance")
+#define defaultMode 'resistance'
 
 // moving average variables
 #define fsrCountMax 5
@@ -23,9 +26,6 @@ int fsr[fsrCountMax];
 // max voltage (based on pulldown resistor) seen on 
 // analog (A0) port, used to normlaize display
 int maxV = 950;  
-
-// Set default mode ("level" or "resistance")
-int defaultMode = 'resistance';
 
 // Normalized Resistance
 int fsrN = 0;
