@@ -97,7 +97,7 @@ void getResistance(void){
 
 String pad(String string, int len){
   int padding = len - string.length();
-  for(int i = 0; i < len; i++) {
+  for(int i = 0; i < padding; i++) {
     string = ' ' + string;  
   }
   return string;
