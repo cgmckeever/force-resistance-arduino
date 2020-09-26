@@ -38,9 +38,8 @@ void loop(void) {
   if(!digitalRead(BUTTON_B)) displayToggle();
   if(!digitalRead(BUTTON_C)) reduceReadingInterval();
 
+  getResistance();
   if (displayOn) {
-    getResistance();
-
     if (fsrNoChange > sleepPolls) displayToggle();
   } else if (fsrNormalized > 80) displayToggle();
 }
