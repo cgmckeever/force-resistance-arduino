@@ -45,8 +45,6 @@ void loop(void) {
 
   if (displayOn) {
     getResistance();
-    String s = String(fsrNormalized);
-    print("Resistance", s.c_str());
 
     if (fsrNoChange > sleepPolls) displayToggle();
   } else if (fsrNormalized > 80) displayToggle();
@@ -61,23 +59,21 @@ void getResistance() {
   }
 
   fsrLevel = floor(fsrTotal / fsrReadings);
+  Serial.print("Analog reading = ");
+  Serial.println(fsrLevel);
 
   fsrNormalized = floor(100 * fsrLevel / maxV);
   if (fsrNormalized > 100) fsrNormalized = 100;
 
-  Serial.print("Analog reading = ");
-  Serial.println(fsrLevel);
+  String s = String(fsrNormalized);
+  print("Resistance", s.c_str());
 
-  if (fsrNormalized == fsrLast) {
-    fsrNoChange += 1;
-  }else {
-    fsrNoChange = 0;
-  }
-
+  int increment = fsrNormalized == fsrLast ? 1 : 0;
+  fsrNoChange += increment;
   fsrLast = fsrNormalized;
 }
 
-void pollsTillSleep() {
+void setSleepPolls() {
   int pollMS = (pollingInterval * fsrReadings);
   sleepPolls = 1000 * secondsTillSleep / pollMS;
   fsrNoChange = 0;
@@ -102,7 +98,7 @@ void reduceReadingInterval() {
     fsrReadings = fsrMaxReadings;
   }
 
-  pollsTillSleep();
+  setSleepPolls();
   printInterval();
 }
 
@@ -150,11 +146,10 @@ void activate() {
   displayOn = true;
   Serial.println("Screen on");
 
-  pollsTillSleep();
-
   print("DIYPELOTON");
   delay(2000);
   printCalibration();
+  setSleepPolls();
   printInterval();
 }
 
