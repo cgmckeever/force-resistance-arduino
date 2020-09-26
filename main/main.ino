@@ -77,11 +77,12 @@ void setSleepPolls() {
 }
 
 void calibrate() {
+  int minV = analogRead(fsrPin);
   printCalibration();
   print("Hold Break", "5 seconds");
   delay(3000);
 
-  maxV = analogRead(fsrPin) + 20;
+  maxV = analogRead(fsrPin) - minV;
   printCalibration();
 }
 
