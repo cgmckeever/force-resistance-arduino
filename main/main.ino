@@ -42,17 +42,13 @@ void loop(void) {
   if(!digitalRead(BUTTON_B)) displayToggle();
   if(!digitalRead(BUTTON_C)) reduceReadingInterval();
 
-  getResistance();
-  String s = String(fsrNormalized);
-  print("Resistance", s.c_str());
+  if (displayOn) {
+    getResistance();
+    String s = String(fsrNormalized);
+    print("Resistance", s.c_str());
 
-  if ( !displayOn && fsrNormalized > 80) {
-    activate();
-  } else if (fsrNoChange > sleepPolls) {
-    if (displayOn) displayToggle();
-    fsrNoChange = 1;
-  }
-
+    if (fsrNoChange > sleepPolls) displayToggle();
+  } else if (fsrNormalized > 80) displayToggle();
 }
 
 void getResistance() {
@@ -143,7 +139,7 @@ void activate() {
   displayOn = true;
   Serial.println("Screen on");
 
-  fsrNoChange = 0
+  fsrNoChange = 0;
 
   print("DIYPELOTON");
   delay(2000);
