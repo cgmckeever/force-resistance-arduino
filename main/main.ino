@@ -160,6 +160,7 @@ void activate() {
 
 void displayToggle() {
   if (displayOn) {
+    Serial.println("Sleep Activated");
     print("Goodbye...");
     delay(2000);
     display.clearDisplay();
