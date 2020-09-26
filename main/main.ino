@@ -26,15 +26,11 @@ void setup(void) {
   Serial.println("");
   Serial.println("Booting...");
 
-  // OLED
-  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
   activate();
 
-  // set buttons
   pinMode(BUTTON_A, INPUT_PULLUP);
   pinMode(BUTTON_B, INPUT_PULLUP);
   pinMode(BUTTON_C, INPUT_PULLUP);
-
 }
 
 void loop(void) {
@@ -141,6 +137,7 @@ void printInterval() {
 }
 
 void activate() {
+  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
   display.ssd1306_command(SSD1306_DISPLAYON);
   displayOn = true;
   Serial.println("Screen on");
