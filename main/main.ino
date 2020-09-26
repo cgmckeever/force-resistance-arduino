@@ -1,6 +1,5 @@
 // config
 #include "config.h"
-#include <string>
 
 // OLED lib
 #include <SPI.h>
