@@ -1,5 +1,6 @@
 // config
 #include "config.h"
+#include <string>
 
 // OLED lib
 #include <SPI.h>
@@ -9,150 +10,156 @@
 
 Adafruit_SSD1306 display = Adafruit_SSD1306(128, 32, &Wire);
 
- 
-void setup(void) {
-  Serial.begin(9600); 
-  Serial.println("");
-  Serial.println("Booting...");  
+bool displayOn = false;
 
-  // OLED 
+int fsrLevel = 0;
+int fsrNormalized = 0;
+int fsrLast = 0;
+int fsrReadings = fsrMaxReadings;
+int fsrNoChange = 0;
+
+void print(const char *line1, const char *line2);
+
+void setup(void) {
+  Serial.begin(115200);
+  Serial.println("");
+  Serial.println("Booting...");
+
+  // OLED
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
-  displayOn();
+  activate();
   delay(2000);
- 
+
   // set buttons
   pinMode(BUTTON_A, INPUT_PULLUP);
   pinMode(BUTTON_B, INPUT_PULLUP);
   pinMode(BUTTON_C, INPUT_PULLUP);
- 
+
 }
 
 void loop(void) {
-
   if(!digitalRead(BUTTON_A)) calibrate();
-  if(!digitalRead(BUTTON_B)) displayOff();
-  if(!digitalRead(BUTTON_C)) reduceInterval();
+  if(!digitalRead(BUTTON_B)) displayToggle();
+  if(!digitalRead(BUTTON_C)) reduceReadingInterval();
 
   getResistance();
-  printResistance(fsrN);
-  Serial.println("Resistance: " + (String) fsrN);
-  
-  delay(1000);
+  String s = String(fsrNormalized);
+  print("Resistance", s.c_str());
 
-  if ((displayState == 0) && (fsrN > 80)) {
-    fsrCount = fsrCountMax;
-    fsrHeld = 0;
-    displayOn();
-  }else if (fsrHeld > fsrTimeout) {
-    if (displayState == 1) displayOff();
-    fsrHeld = 1;
+  if ( !displayOn && fsrNormalized > 80) {
+    activate();
+  } else if (fsrNoChange > sleepPolls) {
+    if (displayOn) displayToggle();
+    fsrNoChange = 1;
   }
-  
-} 
 
+}
 
-//////////////
-//
+void getResistance() {
+  int fsrTotal = 0;
 
-void getResistance(void){
-  fsrTotal = 0;
-  for(int i = 1; i < fsrCount; i++) {
-    fsr[i-1] = fsr[i];
-    fsrTotal = fsrTotal + fsr[i];
+  for(int i = 1; i <= fsrReadings; i++) {
+    fsrTotal += analogRead(fsrPin);
+    delay(150);
   }
-  
-  fsr[fsrCount-1] = analogRead(fsrPin);
+
+  fsrLevel = floor(fsrTotal / fsrReadings);
+
+  fsrNormalized = floor(100 * fsrLevel / maxV);
+  if (fsrNormalized > 100) fsrNormalized = 100;
+
   Serial.print("Analog reading = ");
-  Serial.println(fsr[fsrCount-1]); 
-  
-  fsrTotal = fsrTotal + fsr[fsrCount-1]; 
- 
-  // calculate fsrCount moving average, and normalize off max voltage
-  fsrMA = (float) fsrTotal / fsrCount;
-  Serial.println((String) fsrCount + " Moving Average: " + (String) fsrMA);
-  
-  fsrLast = fsrN;
-  fsrN = round(fsrMA / (float) maxV * 100);
-  if (fsrN > 100) fsrN = 100;
- 
-  if (fsrN == fsrLast) {
-    fsrHeld = fsrHeld + 1;
-  }else{
-    fsrHeld = 0;
-  }
-}
+  Serial.println(fsrLevel);
 
-void print(int line1X, String line1, int line2X, String line2){
-  if (displayState == 1) {
-    display.clearDisplay();  
-    display.setTextSize(2);
-    display.setTextColor(WHITE);
-    
-    display.setCursor(line1X,0);
-    display.println(line1);
-  
-    display.setCursor(line2X,18);
-    display.println(line2);
-    display.display();
+  if (fsrNormalized == fsrLast) {
+    fsrNoChange += 1;
+  }else {
+    fsrNoChange = 0;
   }
-}
 
-void printResistance(int reading){
-  // pad reading for display formating
-  String resistance = (String) reading;
-  int len = 3 - resistance.length();
-  for(int i = 0; i < len; i++) {
-    resistance = ' ' + resistance;  
-  }
-  
-  print(7, "Resistance", 40, resistance);
+  fsrLast = fsrNormalized;
 }
 
 void calibrate(){
-  printCalibration();  
-  print(5, "Hold Break", 3, "5 seconds");
+  printCalibration();
+  print("Hold Break", "5 seconds");
   delay(3000);
-  
+
   maxV = analogRead(fsrPin) + 20;
   printCalibration();
 }
 
-void printCalibration(){
-  print(7, "Calibrate", 0, "max: " + (String) maxV);
-  delay(2000);
-}
-
-void reduceInterval(){
-  if (fsrCount > 1) {
-   fsrCount = fsrCount - 1;
-  }else {
-    fsrCount = fsrCountMax;
+void reduceReadingInterval() {
+  if (fsrReadings > 1) {
+   fsrReadings -= 1;
+  } else {
+    fsrReadings = fsrMaxReadings;
   }
-  printInterval();    
+
+  printInterval();
 }
 
-void printInterval(void){
-  print(15, "Interval", 30, "--" + (String) fsrCount + "--");
-  delay(2000);
+int centerText(const char *buf) {
+  int16_t x1, y1;
+  uint16_t w, h;
+  display.getTextBounds(buf, 0, 0, &x1, &y1, &w, &h);
+  return floor((130 - w)/2);
 }
 
-void displayOff(void){
-  fsrCount = 1;
-  print(5, "Goodbye...", 37, "");
-  delay(2000);
-  display.clearDisplay();
+void printAt(String text, int X, int Y) {
+  display.setCursor(X, Y);
+  display.println(text);
   display.display();
-  display.ssd1306_command(SSD1306_DISPLAYOFF);
-  displayState = 0;
 }
 
-void displayOn(void){
+void print(const char *line1, const char *line2 = "") {
+  if (displayOn) {
+    display.clearDisplay();
+    display.setTextColor(WHITE);
+    display.setTextSize(2);
+
+    int x = centerText(line1);
+    printAt(line1, x, 0);
+
+    x = centerText(line2);
+    printAt(line2, x, 18);
+  }
+}
+
+void printCalibration() {
+  String s = "max: " + String(maxV);
+  print("Calibrate", s.c_str());
+  delay(2000);
+}
+
+void printInterval() {
+  String s = "-- " + String(fsrReadings) + " --";
+  print("Polling", s.c_str());
+  delay(2000);
+}
+
+void activate() {
   display.ssd1306_command(SSD1306_DISPLAYON);
-  displayState = 1;
+  displayOn = true;
   Serial.println("Screen on");
 
-  print(7, "DIYPELOTON", 37, "");
+  fsrNoChange = 0
+
+  print("DIYPELOTON");
   delay(2000);
-  printInterval();
   printCalibration();
+  printInterval();
+}
+
+void displayToggle() {
+  if (displayOn) {
+    print("Goodbye...");
+    delay(2000);
+    display.clearDisplay();
+    display.display();
+    display.ssd1306_command(SSD1306_DISPLAYOFF);
+    displayOn = false;
+  } else {
+    activate();
+  }
 }

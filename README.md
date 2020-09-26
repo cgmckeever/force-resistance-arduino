@@ -1,5 +1,7 @@
 # Resistance Meter for DIY Peloton
 
+[Based on](https://www.youtube.com/watch?v=7WFtoUN-vJk)
+
 ## Features
 
 - Variable sensor level adjustment
@@ -25,16 +27,16 @@
  - Capacitor
     - 47uf
 
-   
+
  ## Build the Meter
- 
+
  - https://www.youtube.com/watch?v=pYDHbLtzT_c
  - https://www.youtube.com/watch?v=1p8AE_QA8qQ
  - https://vimeo.com/107844653
  - https://www.youtube.com/watch?v=biKhUrObnWA
- 
+
  ## Setup the code
- 
+
  - https://learn.adafruit.com/adafruit-feather-huzzah-esp8266/using-arduino-ide
  - https://learn.adafruit.com/adafruit-oled-featherwing/usage
  - Install the code
