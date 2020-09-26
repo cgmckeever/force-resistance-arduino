@@ -86,7 +86,7 @@ void pollsTillSleep() {
   Serial.println(sleepPolls);
 }
 
-void calibrate(){
+void calibrate() {
   printCalibration();
   print("Hold Break", "5 seconds");
   delay(3000);
