@@ -21,7 +21,7 @@ int sleepPolls = 0;
 
 void print(const char *line1, const char *line2);
 
-void setup(void) {
+void setup() {
   Serial.begin(115200);
   Serial.println("");
   Serial.println("Booting...");
@@ -33,7 +33,7 @@ void setup(void) {
   pinMode(BUTTON_C, INPUT_PULLUP);
 }
 
-void loop(void) {
+void loop() {
   if(!digitalRead(BUTTON_A)) calibrate();
   if(!digitalRead(BUTTON_B)) displayToggle();
   if(!digitalRead(BUTTON_C)) reduceReadingInterval();
