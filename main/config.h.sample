@@ -9,11 +9,15 @@
 
 // the FSR and pulldown resistor are connected to a0
 #define fsrPin A0
-#define sleepPolls 600
 
-// moving average variables
+// Number of Polling intervals to average
 #define fsrMaxReadings 5
 
+// Interval (ms) between polls
+#define pollingInterval 150
+
+// Seconds of no resistance change till sleep
+#define secondsTillSleep 600
+
+// Calibration max voltage == max resistance
 int maxV = 950;
-
-

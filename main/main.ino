@@ -18,6 +18,8 @@ int fsrLast = 0;
 int fsrReadings = fsrMaxReadings;
 int fsrNoChange = 0;
 
+int sleepPolls = 0;
+
 void print(const char *line1, const char *line2);
 
 void setup(void) {
@@ -28,7 +30,6 @@ void setup(void) {
   // OLED
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
   activate();
-  delay(2000);
 
   // set buttons
   pinMode(BUTTON_A, INPUT_PULLUP);
@@ -56,7 +57,7 @@ void getResistance() {
 
   for(int i = 1; i <= fsrReadings; i++) {
     fsrTotal += analogRead(fsrPin);
-    delay(150);
+    delay(pollingInterval);
   }
 
   fsrLevel = floor(fsrTotal / fsrReadings);
@@ -76,6 +77,15 @@ void getResistance() {
   fsrLast = fsrNormalized;
 }
 
+void pollsTillSleep() {
+  int pollMS = (pollingInterval * fsrReadings);
+  sleepPolls = 1000 * secondsTillSleep / pollMS;
+  fsrNoChange = 0;
+
+  Serial.print("Sleep Polls: ");
+  Serial.println(sleepPolls);
+}
+
 void calibrate(){
   printCalibration();
   print("Hold Break", "5 seconds");
@@ -92,6 +102,7 @@ void reduceReadingInterval() {
     fsrReadings = fsrMaxReadings;
   }
 
+  pollsTillSleep();
   printInterval();
 }
 
@@ -139,7 +150,7 @@ void activate() {
   displayOn = true;
   Serial.println("Screen on");
 
-  fsrNoChange = 0;
+  pollsTillSleep();
 
   print("DIYPELOTON");
   delay(2000);
